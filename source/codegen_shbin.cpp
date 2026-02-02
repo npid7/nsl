@@ -1,14 +1,17 @@
-#include "codegen_shbin.h"
+#include <codegen_shbin.h>
 
 enum { SHADER_TYPE_VERTEX = 0, SHADER_TYPE_GEO = 1 };
 
-struct __attribute__((packed)) dvlb {
+#pragma pack(push, 1)
+struct dvlb {
   int Magic = 'D' | 'V' << 8 | 'L' << 16 | 'B' << 24;
   int DVLECount;
   int DVLEOffset;
 };
+#pragma pack(pop)
 
-struct __attribute__((packed)) dvlp {
+#pragma pack(push, 1)
+struct dvlp {
   int Magic = 'D' | 'V' << 8 | 'L' << 16 | 'P' << 24;
   int Unk = 0;
   int ShaderBlobOffset;
@@ -17,8 +20,10 @@ struct __attribute__((packed)) dvlp {
   int ShaderInstructionExtCount;
   int SymbolTableOffset;
 };
+#pragma pack(pop)
 
-struct __attribute__((packed)) dvle {
+#pragma pack(push, 1)
+struct dvle {
   int Magic = 'D' | 'V' << 8 | 'L' << 16 | 'E' << 24;
   short Pad2 = 0;
   char ShaderType;
@@ -38,18 +43,22 @@ struct __attribute__((packed)) dvle {
   int SymbolTableOffset;
   int SymbolTableSize;
 };
+#pragma pack(pop)
 
-struct __attribute__((packed)) label_entry {
+#pragma pack(push, 1)
+struct label_entry {
   char Id;
   char Unk[3] = {0, 0, 0};
   int BlobOffset;
   int Unk2 = 0;
   int SymbolOffset;
 };
+#pragma pack(pop)
 
 enum { CONST_TYPE_BOOL = 0, CONST_TYPE_IVEC4 = 1, CONST_TYPE_VEC4 = 2 };
 
-struct __attribute__((packed)) const_entry {
+#pragma pack(push, 1)
+struct const_entry {
   char Type;
   char Pad0 = 0;
   char Id;
@@ -59,25 +68,34 @@ struct __attribute__((packed)) const_entry {
   int Z;
   int W;
 };
+#pragma pack(pop)
 
-struct __attribute__((packed)) uniform_entry {
+#pragma pack(push, 1)
+struct uniform_entry {
   int SymbolOffset;
   short StartReg;
   short EndReg;
 };
+#pragma pack(pop)
 
-struct __attribute__((packed)) op_desc_entry {
-  int Swizzle;
-  int Pad;
+#pragma pack(push, 1)
+struct op_desc_entry {
+  op_desc_entry() = default;
+  op_desc_entry(int v1, int v2) : Swizzle(v1), Pad(v2) {}
+  int Swizzle = 0;
+  int Pad = 0;
 };
+#pragma pack(pop)
 
-struct __attribute__((packed)) output_entry {
+#pragma pack(push, 1)
+struct output_entry {
   char Type;
   char Pad0 = 0;
   char Register;
   char Pad1 = 0;
   int Mask;
 };
+#pragma pack(pop)
 
 struct shbin_gen {
   std::vector<std::string> SymbolTable;
@@ -102,13 +120,13 @@ struct shbin_gen {
   void GenOutputTable();
 };
 
-#define OP_DESC(dst, src1, src2, src3)                                         \
-  ((dst & 0b1111) | ((src1 & 0b111111111) << 4) |                              \
+#define OP_DESC(dst, src1, src2, src3)            \
+  ((dst & 0b1111) | ((src1 & 0b111111111) << 4) | \
    ((src2 & 0b111111111) << 0xD) | ((src3 & 0b111111111) << 0x17))
 
-#define INSTR_1(op, desc, dst, src1, src2, idx)                                \
-  ((desc & 0b1111111) | ((src2 & 0b11111) << 0x7) |                            \
-   ((src1 & 0b1111111) << 0xC) | ((idx & 0b11) << 0x13) |                      \
+#define INSTR_1(op, desc, dst, src1, src2, idx)           \
+  ((desc & 0b1111111) | ((src2 & 0b11111) << 0x7) |       \
+   ((src1 & 0b1111111) << 0xC) | ((idx & 0b11) << 0x13) | \
    ((dst & 0b11111) << 0x15) | ((op & 0b111111) << 0x1A))
 
 #define INSTR_1U(op, desc, dst, src1, idx)                                     \
@@ -116,8 +134,7 @@ struct shbin_gen {
    ((dst & 0b11111) << 0x15) | ((op & 0b111111) << 0x1A))
 
 int shbin_gen::GenInstruction(neocode_instruction *Instruction) {
-  if (Instruction->Type == neocode_instruction::EMPTY)
-    return -1;
+  if (Instruction->Type == neocode_instruction::EMPTY) return -1;
   int DstMask = 0;
   int Src1Comp = 0;
   int Src2Comp = 0;
@@ -130,8 +147,7 @@ int shbin_gen::GenInstruction(neocode_instruction *Instruction) {
     } else {
       for (int i = 0; i < 4; ++i) {
         int V = ((Swizz >> (i * 4)) & 0b1111) - 1;
-        if (V < 0)
-          continue;
+        if (V < 0) continue;
         Src1Comp |= (V << ((0x6 - (i * 2)) + 1));
       }
     }
@@ -143,8 +159,7 @@ int shbin_gen::GenInstruction(neocode_instruction *Instruction) {
     } else {
       for (int i = 0; i < 4; ++i) {
         int V = ((Swizz >> (i * 4)) & 0b1111) - 1;
-        if (V < 0)
-          continue;
+        if (V < 0) continue;
         Src2Comp |= (V << ((0x6 - (i * 2)) + 1));
       }
     }
@@ -155,8 +170,7 @@ int shbin_gen::GenInstruction(neocode_instruction *Instruction) {
   } else {
     for (int i = 0; i < 4; ++i) {
       int V = ((DstSwizz >> (i * 4)) & 0b1111) - 1;
-      if (V < 0)
-        continue;
+      if (V < 0) continue;
       DstMask |= (1 << (3 - V));
     }
   }
@@ -171,7 +185,7 @@ int shbin_gen::GenInstruction(neocode_instruction *Instruction) {
     }
   }
   if (OpDescIndex < 0) {
-    OpDescTable.push_back((op_desc_entry){OpDesc, 0});
+    OpDescTable.push_back(op_desc_entry(OpDesc, 0));
     OpDescIndex = OpDescTable.size() - 1;
   }
   int Src1Reg = Instruction->Src1.Register +
@@ -179,37 +193,37 @@ int shbin_gen::GenInstruction(neocode_instruction *Instruction) {
                      ? Instruction->Src1.Swizzle
                      : 0);
   switch (Instruction->Type) {
-  case neocode_instruction::MOV:
-    return INSTR_1U(0x13, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
+    case neocode_instruction::MOV:
+      return INSTR_1U(0x13, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
 
-  case neocode_instruction::DP4:
-    return INSTR_1(0x02, OpDescIndex, Instruction->Dst.Register,
-                   Src1Reg, Instruction->Src2.Register, 0);
+    case neocode_instruction::DP4:
+      return INSTR_1(0x02, OpDescIndex, Instruction->Dst.Register, Src1Reg,
+                     Instruction->Src2.Register, 0);
 
-  case neocode_instruction::MUL:
-    return INSTR_1(0x08, OpDescIndex, Instruction->Dst.Register, Src1Reg,
-                   Instruction->Src2.Register, 0);
+    case neocode_instruction::MUL:
+      return INSTR_1(0x08, OpDescIndex, Instruction->Dst.Register, Src1Reg,
+                     Instruction->Src2.Register, 0);
 
-  case neocode_instruction::RSQ:
-    return INSTR_1U(0x0F, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
+    case neocode_instruction::RSQ:
+      return INSTR_1U(0x0F, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
 
-  case neocode_instruction::RCP:
-    return INSTR_1U(0x0E, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
+    case neocode_instruction::RCP:
+      return INSTR_1U(0x0E, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
 
-  case neocode_instruction::NOP:
-    return 0x21 << 0x1A;
+    case neocode_instruction::NOP:
+      return 0x21 << 0x1A;
 
-  case neocode_instruction::END:
-    return 0x22 << 0x1A;
+    case neocode_instruction::END:
+      return 0x22 << 0x1A;
 
-  case neocode_instruction::EX2:
-    return INSTR_1U(0x05, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
+    case neocode_instruction::EX2:
+      return INSTR_1U(0x05, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
 
-  case neocode_instruction::LG2:
-    return INSTR_1U(0x06, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
+    case neocode_instruction::LG2:
+      return INSTR_1U(0x06, OpDescIndex, Instruction->Dst.Register, Src1Reg, 0);
 
-  default:
-    return -1;
+    default:
+      return -1;
   }
 }
 
@@ -238,8 +252,7 @@ void shbin_gen::GenBlob() {
     LabelTable.push_back(E);
     for (neocode_instruction &Instruction : F.Instructions) {
       int Instr = GenInstruction(&Instruction);
-      if (Instr != -1)
-        Blob.push_back(Instr);
+      if (Instr != -1) Blob.push_back(Instr);
     }
     // E.Id = LabelTable.size();
     E.BlobOffset = Blob.size();

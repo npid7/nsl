@@ -1,5 +1,5 @@
-#include "symbol.h"
-#include "lexer.h"
+#include <lexer.h>
+#include <symbol.h>
 
 int symtable::GetIndex(std::string Name) {
   for (int i = 0; i < (int)symbols.size(); ++i) {
@@ -13,7 +13,7 @@ int symtable::GetIndex(std::string Name) {
 
 symtable_entry *symtable::Insert(std::string Name, int Type) {
   if (GetIndex(Name) == 0) {
-    symbols.push_back((symtable_entry){Name, Type});
+    symbols.push_back(symtable_entry(Name, Type));
   }
 
   return Lookup(Name);
@@ -33,9 +33,7 @@ symtable_entry *symtable::FindFirstOfType(int T) {
   return &symbols[0];
 }
 
-void symtable::OpenScope() {
-  StackedTables.push_back(*this);
-}
+void symtable::OpenScope() { StackedTables.push_back(*this); }
 
 void symtable::CloseScope() {
   *this = StackedTables.back();

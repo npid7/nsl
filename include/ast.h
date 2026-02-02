@@ -1,11 +1,11 @@
+#pragma once
 
-#ifndef AST_H
-#define AST_H
+#include <parser.h>
 
-#include "parser.h"
+#include <string>
+#include <vector>
 
 struct ast_node {
-
   enum {
     NONE = 0,
     FUNCTION,
@@ -45,7 +45,7 @@ struct ast_node {
 class ast {
   symtable *SymbolTable;
 
-public:
+ public:
   ast(symtable *S);
   ast_node BuildStatement(parse_node &P);
   ast_node BuildStatementList(parse_node &P);
@@ -56,5 +56,3 @@ public:
   ast_node BuildDeclaration(parse_node &P);
   static ast_node BuildTranslationUnit(parse_node &P, symtable *S);
 };
-
-#endif

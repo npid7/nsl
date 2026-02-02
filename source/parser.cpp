@@ -1,12 +1,12 @@
-#include "parser.h"
+#include <parser.h>
+
 #include <cstdlib>
 #include <functional>
 
 void parser::GenError(const std::string &S, const token &T) {
   std::string Line = LexerGetLine(&Lex, T.Line);
   if (ErrorFunc)
-    if (ErrorDisableCount == 0)
-      ErrorFunc(S, Line, T.Line, T.Offset);
+    if (ErrorDisableCount == 0) ErrorFunc(S, Line, T.Line, T.Offset);
 }
 
 parser::parser(lexer_state &L) : Lex(L) { SymbolTable = Lex.Table; }
@@ -25,9 +25,7 @@ void parser::DisableErrors() { ++ErrorDisableCount; }
 
 void parser::EnableErrors() { --ErrorDisableCount; }
 
-void parser::PushState() {
-  ParseStateStack.push_back((parse_state){Lex, Token});
-}
+void parser::PushState() { ParseStateStack.push_back(parse_state(Lex, Token)); }
 
 void parser::PopState() {
   parse_state S = ParseStateStack.back();
@@ -172,112 +170,112 @@ parse_node parser::ParseFunctionPrototype() {
 
 bool parser::IsAssignmentOp(int T) {
   switch (T) {
-  case token::EQUAL:
-  case token::MUL_ASSIGN:
-  case token::DIV_ASSIGN:
-  case token::ADD_ASSIGN:
-  case token::SUB_ASSIGN:
-  case token::MOD_ASSIGN:
-  case token::LEFT_ASSIGN:
-  case token::RIGHT_ASSIGN:
-  case token::AND_ASSIGN:
-  case token::XOR_ASSIGN:
-  case token::OR_ASSIGN:
-    return true;
-  default:
-    return false;
+    case token::EQUAL:
+    case token::MUL_ASSIGN:
+    case token::DIV_ASSIGN:
+    case token::ADD_ASSIGN:
+    case token::SUB_ASSIGN:
+    case token::MOD_ASSIGN:
+    case token::LEFT_ASSIGN:
+    case token::RIGHT_ASSIGN:
+    case token::AND_ASSIGN:
+    case token::XOR_ASSIGN:
+    case token::OR_ASSIGN:
+      return true;
+    default:
+      return false;
   }
 }
 
 bool parser::IsTypeQualifier(int T) {
   switch (T) {
-  case token::CONST:
-  case token::ATTRIBUTE:
-  case token::VARYING:
-  case token::INVARIANT:
-  case token::UNIFORM:
-    return true;
+    case token::CONST:
+    case token::ATTRIBUTE:
+    case token::VARYING:
+    case token::INVARIANT:
+    case token::UNIFORM:
+      return true;
   }
   return false;
 }
 
 bool parser::IsPrecisionQualifier(int T) {
   switch (T) {
-  case token::HIGH_PRECISION:
-  case token::MEDIUM_PRECISION:
-  case token::LOW_PRECISION:
-    return true;
+    case token::HIGH_PRECISION:
+    case token::MEDIUM_PRECISION:
+    case token::LOW_PRECISION:
+      return true;
   }
   return false;
 }
 
 bool parser::IsIterationToken(int T) {
   switch (T) {
-  case token::WHILE:
-  case token::DO:
-  case token::FOR:
-    return true;
+    case token::WHILE:
+    case token::DO:
+    case token::FOR:
+      return true;
   }
   return false;
 }
 
 bool parser::IsJumpToken(int T) {
   switch (T) {
-  case token::CONTINUE:
-  case token::BREAK:
-  case token::RETURN:
-  case token::DISCARD:
-    return true;
+    case token::CONTINUE:
+    case token::BREAK:
+    case token::RETURN:
+    case token::DISCARD:
+      return true;
   }
   return false;
 }
 
 bool parser::IsTypeSpecifier(int T) {
   switch (T) {
-  case token::VOID:
-  case token::FLOAT:
-  case token::INT:
-  case token::BOOL:
-  case token::VEC2:
-  case token::VEC3:
-  case token::VEC4:
-  case token::BVEC2:
-  case token::BVEC3:
-  case token::BVEC4:
-  case token::IVEC2:
-  case token::IVEC3:
-  case token::IVEC4:
-  case token::MAT2:
-  case token::MAT3:
-  case token::MAT4:
-  case token::SAMPLER2D:
-  case token::SAMPLERCUBE:
-  case token::TYPE_NAME:
-  case token::STRUCT:
-    return true;
+    case token::VOID:
+    case token::FLOAT:
+    case token::INT:
+    case token::BOOL:
+    case token::VEC2:
+    case token::VEC3:
+    case token::VEC4:
+    case token::BVEC2:
+    case token::BVEC3:
+    case token::BVEC4:
+    case token::IVEC2:
+    case token::IVEC3:
+    case token::IVEC4:
+    case token::MAT2:
+    case token::MAT3:
+    case token::MAT4:
+    case token::SAMPLER2D:
+    case token::SAMPLERCUBE:
+    case token::TYPE_NAME:
+    case token::STRUCT:
+      return true;
   }
   return false;
 }
 
 bool parser::IsConstructorIdentifier(int T) {
   switch (T) {
-  case token::FLOAT:
-  case token::INT:
-  case token::BOOL:
-  case token::VEC2:
-  case token::VEC3:
-  case token::VEC4:
-  case token::BVEC2:
-  case token::BVEC3:
-  case token::BVEC4:
-  case token::IVEC2:
-  case token::IVEC3:
-  case token::IVEC4:
-  case token::MAT2:
-  case token::MAT3:
-  case token::MAT4:
-  case token::TYPE_NAME:
-    return true;
+    case token::FLOAT:
+    case token::INT:
+    case token::BOOL:
+    case token::VEC2:
+    case token::VEC3:
+    case token::VEC4:
+    case token::BVEC2:
+    case token::BVEC3:
+    case token::BVEC4:
+    case token::IVEC2:
+    case token::IVEC3:
+    case token::IVEC4:
+    case token::MAT2:
+    case token::MAT3:
+    case token::MAT4:
+    case token::TYPE_NAME:
+      return true;
   }
   return false;
 }
@@ -288,36 +286,38 @@ bool parser::IsParameterQualifier(int T) {
 
 parse_node parser::ParseAssignmentOperator() {
   switch (Token.Type) {
-  case token::MOD_ASSIGN:
-  case token::LEFT_ASSIGN:
-  case token::RIGHT_ASSIGN:
-  case token::AND_ASSIGN:
-  case token::XOR_ASSIGN:
-  case token::OR_ASSIGN:
-    GenError("use of reserved operator " + TokenToString(Token) + " is illegal",
-             Token);
-  case token::EQUAL:
-  case token::MUL_ASSIGN:
-  case token::DIV_ASSIGN:
-  case token::ADD_ASSIGN:
-  case token::SUB_ASSIGN: {
-    parse_node N = parse_node(Token);
-    Match(Token.Type);
-    return N;
-  }
+    case token::MOD_ASSIGN:
+    case token::LEFT_ASSIGN:
+    case token::RIGHT_ASSIGN:
+    case token::AND_ASSIGN:
+    case token::XOR_ASSIGN:
+    case token::OR_ASSIGN:
+      GenError(
+          "use of reserved operator " + TokenToString(Token) + " is illegal",
+          Token);
+    case token::EQUAL:
+    case token::MUL_ASSIGN:
+    case token::DIV_ASSIGN:
+    case token::ADD_ASSIGN:
+    case token::SUB_ASSIGN: {
+      parse_node N = parse_node(Token);
+      Match(Token.Type);
+      return N;
+    }
 
-  default:
-    GenError("expected assignement operator before token " +
-                 TokenToString(Token),
-             Token);
-    return parse_node();
+    default:
+      GenError(
+          "expected assignement operator before token " + TokenToString(Token),
+          Token);
+      return parse_node();
   }
 }
 
 parse_node parser::ParseFunctionCall() {
   parse_node N = parse_node(parse_node::FUNCTION_CALL);
   if (!(Token.Type == token::IDENTIFIER ||
-        IsConstructorIdentifier(Token.Type) || Token.Type == token::ASM) || IsConstructorIdentifier(Token.Type)) {
+        IsConstructorIdentifier(Token.Type) || Token.Type == token::ASM) ||
+      IsConstructorIdentifier(Token.Type)) {
     GenError("expected function identifier or type constructor before token " +
                  TokenToString(Token),
              Token);
@@ -360,8 +360,7 @@ parse_node parser::ParseOperatorExpression(ParseFuncPtr R,
 #define CALL_MEMBER_FN(object, ptrToMember) ((object).*(ptrToMember))
   auto IsOfType = [](int T, std::vector<int> &v) -> bool {
     for (int &i : v) {
-      if (i == T)
-        return true;
+      if (i == T) return true;
     }
     return false;
   };
@@ -455,21 +454,21 @@ parse_node parser::ParsePrimaryExpression() {
     return N;
   }
   switch (Token.Type) {
-  case token::INTCONSTANT:
-  case token::FLOATCONSTANT:
-  case token::BOOLCONSTANT:
-  case token::IDENTIFIER:
-  case token::DQSTRING:
-    N = parse_node(Token, parse_node::PRIMARY_EXPRESSION);
-    Match(Token.Type);
-    return N;
+    case token::INTCONSTANT:
+    case token::FLOATCONSTANT:
+    case token::BOOLCONSTANT:
+    case token::IDENTIFIER:
+    case token::DQSTRING:
+      N = parse_node(Token, parse_node::PRIMARY_EXPRESSION);
+      Match(Token.Type);
+      return N;
 
-  default: {
-    GenError("unexpected token " + TokenToString(Token) +
-                 " in pimary expression",
-             Token);
-    return parse_node();
-  }
+    default: {
+      GenError(
+          "unexpected token " + TokenToString(Token) + " in pimary expression",
+          Token);
+      return parse_node();
+    }
   }
 }
 
@@ -509,16 +508,16 @@ parse_node parser::ParsePostfixExpression() {
 parse_node parser::ParseUnaryExpression() {
   parse_node N;
   switch (Token.Type) {
-  case token::INC_OP:
-  case token::DEC_OP:
-  case token::PLUS:
-  case token::DASH:
-  case token::BANG:
-  case token::TILDE:
-    N.Children.push_back(parse_node(Token));
-    Match(Token.Type);
-    N.Children.push_back(ParseUnaryExpression());
-    return N;
+    case token::INC_OP:
+    case token::DEC_OP:
+    case token::PLUS:
+    case token::DASH:
+    case token::BANG:
+    case token::TILDE:
+      N.Children.push_back(parse_node(Token));
+      Match(Token.Type);
+      N.Children.push_back(ParseUnaryExpression());
+      return N;
   }
   return ParsePostfixExpression();
 }
@@ -631,32 +630,32 @@ parse_node parser::ParseStructSpecifier() {
 
 parse_node parser::ParseTypeSpecifierNoPrecision() {
   switch (Token.Type) {
-  case token::VOID:
-  case token::FLOAT:
-  case token::INT:
-  case token::BOOL:
-  case token::VEC2:
-  case token::VEC3:
-  case token::VEC4:
-  case token::BVEC2:
-  case token::BVEC3:
-  case token::BVEC4:
-  case token::IVEC2:
-  case token::IVEC3:
-  case token::IVEC4:
-  case token::MAT2:
-  case token::MAT3:
-  case token::MAT4:
-  case token::SAMPLER2D:
-  case token::SAMPLERCUBE:
-  case token::TYPE_NAME: {
-    parse_node N = parse_node(Token, parse_node::TYPE_SPECIFIER);
-    Match(Token.Type);
-    return N;
-  }
+    case token::VOID:
+    case token::FLOAT:
+    case token::INT:
+    case token::BOOL:
+    case token::VEC2:
+    case token::VEC3:
+    case token::VEC4:
+    case token::BVEC2:
+    case token::BVEC3:
+    case token::BVEC4:
+    case token::IVEC2:
+    case token::IVEC3:
+    case token::IVEC4:
+    case token::MAT2:
+    case token::MAT3:
+    case token::MAT4:
+    case token::SAMPLER2D:
+    case token::SAMPLERCUBE:
+    case token::TYPE_NAME: {
+      parse_node N = parse_node(Token, parse_node::TYPE_SPECIFIER);
+      Match(Token.Type);
+      return N;
+    }
 
-  case token::STRUCT:
-    return ParseStructSpecifier();
+    case token::STRUCT:
+      return ParseStructSpecifier();
   }
 
   GenError("expected type specifier before token " + TokenToString(Token),
@@ -908,8 +907,7 @@ parse_node parser::ParseSingleDeclaration() {
 parse_node parser::ParseInitDeclaratorList() {
   parse_node N;
   N.Children.push_back(ParseSingleDeclaration());
-  if (Token.Type != token::COMMA)
-    return N;
+  if (Token.Type != token::COMMA) return N;
   while (Token.Type == token::COMMA) {
     N.Children.push_back(parse_node(Token));
     Match(token::COMMA);

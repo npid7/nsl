@@ -1,4 +1,5 @@
-#include "lexer.h"
+#include <lexer.h>
+
 #include <cstdlib>
 #include <cstring>
 
@@ -45,8 +46,7 @@ token LexerGetToken(lexer_state *State) {
   };
 
   char *Current = State->CurrentPtr;
-  if (Current >= State->EndPtr)
-    return {token::END};
+  if (Current >= State->EndPtr) return {token::END};
 _CheckWhiteSpace:
   while (IsWhiteSpace(Current[0]) && (Current < State->EndPtr)) {
     ++State->OffsetCurrent;
@@ -103,10 +103,8 @@ _CheckWhiteSpace:
     ReturnToken.Line = State->LineCurrent;
     ReturnToken.Offset = State->OffsetCurrent;
     if (Entry->SymbolType == token::BOOLCONSTANT) {
-      if (strcmp(Entry->Name.c_str(), "true") == 0)
-        ReturnToken.BoolValue = 1;
-      if (strcmp(Entry->Name.c_str(), "false") == 0)
-        ReturnToken.BoolValue = 0;
+      if (strcmp(Entry->Name.c_str(), "true") == 0) ReturnToken.BoolValue = 1;
+      if (strcmp(Entry->Name.c_str(), "false") == 0) ReturnToken.BoolValue = 0;
     }
     State->OffsetCurrent += End - Current;
     Current = End;
@@ -143,20 +141,20 @@ _CheckWhiteSpace:
 
   static auto GetEsacpedChar = [](char Char) {
     switch (Char) {
-    case 't':
-      return '\t';
-    case 'n':
-      return '\n';
-    case 'r':
-      return '\r';
-    case 'f':
-      return '\f';
-    case '"':
-      return '\"';
-    case '\'':
-      return '\'';
-    case '\\':
-      return '\\';
+      case 't':
+        return '\t';
+      case 'n':
+        return '\n';
+      case 'r':
+        return '\r';
+      case 'f':
+        return '\f';
+      case '"':
+        return '\"';
+      case '\'':
+        return '\'';
+      case '\\':
+        return '\\';
     }
 
     return Char;
@@ -166,17 +164,17 @@ _CheckWhiteSpace:
     char *End = Current + 1;
     while ((*End != '\"') && (End < State->EndPtr)) {
       switch (*End) {
-      case '\\':
-        if (End + 1 < State->EndPtr) {
-          ReturnToken.Id += GetEsacpedChar(*(End + 1));
-          End += 2;
-        }
-        break;
+        case '\\':
+          if (End + 1 < State->EndPtr) {
+            ReturnToken.Id += GetEsacpedChar(*(End + 1));
+            End += 2;
+          }
+          break;
 
-      default:
-        ReturnToken.Id += *End;
-        ++End;
-        break;
+        default:
+          ReturnToken.Id += *End;
+          ++End;
+          break;
       }
     }
 
@@ -194,17 +192,17 @@ _CheckWhiteSpace:
     char *End = Current + 1;
     while ((*End != '\'') && (End < State->EndPtr)) {
       switch (*End) {
-      case '\\':
-        if (End + 1 < State->EndPtr) {
-          ReturnToken.Id += GetEsacpedChar(*(End + 1));
-          End += 2;
-        }
-        break;
+        case '\\':
+          if (End + 1 < State->EndPtr) {
+            ReturnToken.Id += GetEsacpedChar(*(End + 1));
+            End += 2;
+          }
+          break;
 
-      default:
-        ReturnToken.Id += *End;
-        ++End;
-        break;
+        default:
+          ReturnToken.Id += *End;
+          ++End;
+          break;
       }
     }
 
@@ -217,39 +215,39 @@ _CheckWhiteSpace:
   }
 
   switch (Current[0]) {
-  case '<': {
-    if (Current < State->EndPtr) {
-      if (Current[1] == '<') {
-        ReturnToken.Type = token::LEFT_ASSIGN;
-        ++State->OffsetCurrent;
-      } else if (Current[1] == '=') {
-        ReturnToken.Type = token::LE_OP;
-        ++State->OffsetCurrent;
-      }
-    }
-    goto _BuildToken;
-  }
-
-  case '|': {
-    if (Current < State->EndPtr) {
-      if (Current[1] == '|') {
-        ReturnToken.Type = token::OR_OP;
-        ++State->OffsetCurrent;
-        ++Current;
-      } else if (Current[1] == '=') {
-        ReturnToken.Type = token::OR_ASSIGN;
-        ++State->OffsetCurrent;
+    case '<': {
+      if (Current < State->EndPtr) {
+        if (Current[1] == '<') {
+          ReturnToken.Type = token::LEFT_ASSIGN;
+          ++State->OffsetCurrent;
+        } else if (Current[1] == '=') {
+          ReturnToken.Type = token::LE_OP;
+          ++State->OffsetCurrent;
+        }
       }
       goto _BuildToken;
     }
-  }
 
-  default:
-    ReturnToken.Type = Current[0];
-  _BuildToken:
-    ReturnToken.Line = State->LineCurrent;
-    ReturnToken.Offset = State->OffsetCurrent;
-    ++State->OffsetCurrent;
+    case '|': {
+      if (Current < State->EndPtr) {
+        if (Current[1] == '|') {
+          ReturnToken.Type = token::OR_OP;
+          ++State->OffsetCurrent;
+          ++Current;
+        } else if (Current[1] == '=') {
+          ReturnToken.Type = token::OR_ASSIGN;
+          ++State->OffsetCurrent;
+        }
+        goto _BuildToken;
+      }
+    }
+
+    default:
+      ReturnToken.Type = Current[0];
+    _BuildToken:
+      ReturnToken.Line = State->LineCurrent;
+      ReturnToken.Offset = State->OffsetCurrent;
+      ++State->OffsetCurrent;
   }
 
   ++Current;

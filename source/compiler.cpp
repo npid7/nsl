@@ -1,9 +1,10 @@
-#include "compiler.h"
-#include "ast.h"
-#include "codegen_shbin.h"
-#include "parser.h"
-#include <cstring>
+#include <ast.h>
+#include <codegen_shbin.h>
+#include <compiler.h>
+#include <parser.h>
+
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 
 static void (*UserErrorHandler)(const char *Msg) = nullptr;
@@ -11,14 +12,15 @@ static void (*UserErrorHandler)(const char *Msg) = nullptr;
 static void ErrorCallback(const std::string &ErrMsg,
                           const std::string &OffendingLine, int LineNumber,
                           int LineOffset) {
-  std::string Msg = "error:" + std::to_string(LineNumber) + ":" + std::to_string(LineOffset) + ErrMsg + "\n" + OffendingLine + "\n";
+  std::string Msg = "error:" + std::to_string(LineNumber) + ":" +
+                    std::to_string(LineOffset) + ErrMsg + "\n" + OffendingLine +
+                    "\n";
   if (UserErrorHandler) UserErrorHandler(Msg.c_str());
 }
 
 static char *SlurpFile(const char *FilePath, long *FileSize) {
   std::ifstream is(FilePath);
-  if (!is)
-    return nullptr;
+  if (!is) return nullptr;
   is.seekg(0, std::ios::end);
   long Length = is.tellg();
   is.seekg(0, std::ios::beg);
@@ -27,8 +29,7 @@ static char *SlurpFile(const char *FilePath, long *FileSize) {
   is.read(Buffer, Length);
   is.close();
 
-  if (FileSize)
-    *FileSize = Length;
+  if (FileSize) *FileSize = Length;
   return Buffer;
 }
 
@@ -56,11 +57,9 @@ char *SelenaCompileShaderSource(const char *Src, int *BinSize) {
   return Shbin;
 }
 
-char* SelenaCompileShaderFile(const char *Path, int *BinSize)
-{
-    long Size;
-    char *Src = SlurpFile(Path, &Size);
-    return SelenaCompileShaderSource(Src, BinSize);
+char *SelenaCompileShaderFile(const char *Path, int *BinSize) {
+  long Size;
+  char *Src = SlurpFile(Path, &Size);
+  return SelenaCompileShaderSource(Src, BinSize);
 }
-
 }

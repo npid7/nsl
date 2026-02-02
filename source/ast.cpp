@@ -1,5 +1,5 @@
 
-#include "ast.h"
+#include <ast.h>
 
 ast::ast(symtable *S) : SymbolTable(S) {}
 
@@ -8,8 +8,7 @@ ast_node ast::BuildFunctionCall(parse_node &P) {
   A.Type = ast_node::FUNCTION_CALL;
   A.Id = P.Children[0].Token.Id;
   for (parse_node &PN : P.Children[2].Children) {
-    if (PN.Token.Type == token::COMMA)
-      continue;
+    if (PN.Token.Type == token::COMMA) continue;
     A.Children.push_back(BuildAssignmentExpression(PN));
   }
   return A;
@@ -18,26 +17,26 @@ ast_node ast::BuildFunctionCall(parse_node &P) {
 ast_node ast::BuildPrimaryExpression(parse_node &P) {
   ast_node A;
   switch (P.Token.Type) {
-  case token::INTCONSTANT:
-    A.Type = ast_node::INT_LITERAL;
-    A.IntValue = P.Token.IntValue;
-    break;
-  case token::FLOATCONSTANT:
-    A.Type = ast_node::FLOAT_LITERAL;
-    A.FloatValue = P.Token.FloatValue;
-    break;
-  case token::BOOLCONSTANT:
-    A.Type = ast_node::BOOL_LITERAL;
-    A.IntValue = P.Token.BoolValue;
-    break;
-  case token::IDENTIFIER:
-    A.Type = ast_node::VARIABLE;
-    A.Id = P.Token.Id;
-    break;
-  case token::DQSTRING:
-    A.Type = ast_node::STRING_LITERAL;
-    A.Id = P.Token.Id;
-    break;
+    case token::INTCONSTANT:
+      A.Type = ast_node::INT_LITERAL;
+      A.IntValue = P.Token.IntValue;
+      break;
+    case token::FLOATCONSTANT:
+      A.Type = ast_node::FLOAT_LITERAL;
+      A.FloatValue = P.Token.FloatValue;
+      break;
+    case token::BOOLCONSTANT:
+      A.Type = ast_node::BOOL_LITERAL;
+      A.IntValue = P.Token.BoolValue;
+      break;
+    case token::IDENTIFIER:
+      A.Type = ast_node::VARIABLE;
+      A.Id = P.Token.Id;
+      break;
+    case token::DQSTRING:
+      A.Type = ast_node::STRING_LITERAL;
+      A.Id = P.Token.Id;
+      break;
   }
   return A;
 }
@@ -67,14 +66,14 @@ ast_node ast::BuildAssignmentExpression(parse_node &P) {
 ast_node ast::BuildStatement(parse_node &P) {
   ast_node A;
   switch (P.Type) {
-  case parse_node::DECLARATION:
-    return BuildDeclaration(P);
-  case parse_node::E:
-    return BuildStatement(P.Children[0]);
-  case parse_node::ASSIGNMENT_EXPR:
-    return BuildAssignmentExpression(P);
-  case parse_node::EXPRESSION:
-    return BuildAssignmentExpression(P.Children[0]);
+    case parse_node::DECLARATION:
+      return BuildDeclaration(P);
+    case parse_node::E:
+      return BuildStatement(P.Children[0]);
+    case parse_node::ASSIGNMENT_EXPR:
+      return BuildAssignmentExpression(P);
+    case parse_node::EXPRESSION:
+      return BuildAssignmentExpression(P.Children[0]);
   }
   return A;
 }
@@ -92,8 +91,8 @@ ast_node ast::BuildDeclaration(parse_node &P) {
   ast_node A;
   parse_node &Declarator = P.Children[0];
   std::string ID;
-  int Qualifier;
-  int Specifier;
+  int Qualifier = 0;
+  int Specifier = 0;
   for (size_t i = 0; i < Declarator.Children.size(); ++i) {
     if (Declarator.Children[i].Type == parse_node::TYPE_QUALIFIER) {
       Qualifier = Declarator.Children[i].Token.Type;
@@ -123,8 +122,8 @@ ast_node ast::BuildFunctionDefinition(parse_node &P) {
   A.Type = ast_node::FUNCTION;
   parse_node &Declarator = P;
   std::string ID;
-  int Qualifier;
-  int Specifier;
+  int Qualifier = 0;
+  int Specifier = 0;
   for (size_t i = 0; i < Declarator.Children.size(); ++i) {
     if (Declarator.Children[i].Type == parse_node::TYPE_QUALIFIER) {
       Qualifier = Declarator.Children[i].Token.Type;

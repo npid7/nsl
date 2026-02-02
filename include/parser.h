@@ -1,11 +1,8 @@
+#pragma once
 
-#ifndef PARSER_H
-#define PARSER_H
-
-#include "lexer.h"
+#include <lexer.h>
 
 struct parse_node {
-
   enum NodeType : int {
     DECLARATION,
     FUNCTION_DEFINITION,
@@ -47,6 +44,8 @@ struct parser {
   lexer_state &Lex;
   token Token;
   struct parse_state {
+    parse_state() = default;
+    parse_state(const lexer_state &l, const token &t) : L(l), T(t) {}
     lexer_state L;
     token T;
   };
@@ -136,5 +135,3 @@ struct parser {
   parse_node ParseExternalDeclaration();
   parse_node ParseTranslationUnit();
 };
-
-#endif

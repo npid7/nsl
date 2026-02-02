@@ -1,4 +1,5 @@
 # !!! THIS PROJECT IS DISCONTINUED !!!
+# OR IS IT???
 # Npi Shading Language for the 3ds
 Based on GLSL lang
 
@@ -7,12 +8,11 @@ Vertex Shader compiler
 # Repo Structure
 ```
 --nsl
-|--driver: The nslcc Tool to Compile .nsl files on Pc
-|--examples: Some badic Exames
+|--compiler: The nslcc Tool to Compile .nsl files on Pc
+|--examples: Some basic Exames
 |--include: Include Dir of the library
 |--source: Source Dir of the library
 |---CMakeLists.txt: Cmake config for nslcc
-|---Makefile: Makefile for the 3ds Library
 ```
 # Credits
 - [machinamentum](https://github.com/machinamentum/) -> [Selena](https://github.com/machinamentum/Selena) is the Base of this Project.

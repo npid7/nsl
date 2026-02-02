@@ -1,8 +1,6 @@
+#pragma once
 
-#ifndef PREPROCESSOR_H
-#define PREPROCESSOR_H
-
-#include "parser.h"
+#include <parser.h>
 
 struct cpp_macro {
   std::string Id;
@@ -15,5 +13,3 @@ struct cpp_table {
 
 void CppDefineInt(cpp_table *Table, std::string Id, int Value);
 void CppResolveMacros(cpp_table *Table, parse_node *PTree);
-
-#endif

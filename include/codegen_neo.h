@@ -1,8 +1,6 @@
+#pragma once
 
-#ifndef CODEGEN_NEO_H
-#define CODEGEN_NEO_H
-
-#include "ast.h"
+#include <ast.h>
 
 struct neocode_register_file {
   int Vertex[8];
@@ -55,11 +53,9 @@ struct neocode_register_file {
   }
 
   void Free(int Register) {
-    if (Register < 0x8)
-      Vertex[Register] = 0;
+    if (Register < 0x8) Vertex[Register] = 0;
 
-    if (Register >= 0x10 && Register < 0x20)
-      Temp[Register - 0x10] = 0;
+    if (Register >= 0x10 && Register < 0x20) Temp[Register - 0x10] = 0;
 
     // if (Register >= 0x20)
     //   Constants[Register - 0x20] = 0;
@@ -79,17 +75,26 @@ struct neocode_constant {
     BOOLEAN,
   };
 
-  int Type;
+  template <typename T>
+  struct vv4 {
+    vv4() {}
+    vv4(T x, T y, T z, T w) : X(x), Y(y), Z(z), W(w) {}
+    T X, Y, Z, W;
+  };
 
-  struct {
-    int X, Y, Z, W;
-  } Integer;
+  neocode_constant(int t, vv4<int> i)
+      : Type(t), Integer(i), Float(vv4<float>()), Bool(0) {}
+  neocode_constant(int t, vv4<float> f)
+      : Type(t), Integer(vv4<int>()), Float(f), Bool(0) {}
+  neocode_constant(int t, int b)
+      : Type(t), Integer(vv4<int>()), Float(vv4<float>()), Bool(b) {}
+  neocode_constant(int i = 0) : Type(i) {}
 
-  struct {
-    float X, Y, Z, W;
-  } Float;
+  int Type = 0;
+  vv4<int> Integer;
+  vv4<float> Float;
 
-  int Bool;
+  int Bool = 0;
 };
 
 struct neocode_variable {
@@ -106,6 +111,18 @@ struct neocode_variable {
     OUTPUT_VIEW,
     OUTPUT_DUMMY,
   };
+
+  neocode_variable(const std::string &name = "", const std::string &_tn = "",
+                   int t = 0, int r = 0, int rt = 0,
+                   neocode_constant c = neocode_constant(0), int s = 0) {
+    Name = name;
+    TypeName = _tn;
+    Type = t;
+    Register = r;
+    RegisterType = rt;
+    Const = c;
+    Swizzle = s;
+  }
 
   std::string Name;
   std::string TypeName;
@@ -161,5 +178,3 @@ struct cg_neo {
 
 neocode_program CGNeoBuildProgramInstance(ast_node *ASTNode, symtable *S);
 void CGNeoGenerateCode(neocode_program *Program, std::ostream &os);
-
-#endif

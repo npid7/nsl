@@ -1,5 +1,5 @@
 
-#include "preprocessor.h"
+#include <preprocessor.h>
 
 void CppDefineInt(cpp_table *Table, std::string Id, int Value) {
   cpp_macro Macro;
