@@ -1,4 +1,4 @@
-#include <codegen_shbin.h>
+#include <nsl/codegen_shbin.hpp>
 
 enum { SHADER_TYPE_VERTEX = 0, SHADER_TYPE_GEO = 1 };
 

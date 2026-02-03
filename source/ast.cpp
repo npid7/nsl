@@ -1,5 +1,5 @@
 
-#include <ast.h>
+#include <nsl/ast.hpp>
 
 ast::ast(symtable *S) : SymbolTable(S) {}
 

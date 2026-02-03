@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ast.h>
+#include <nsl/ast.hpp>
 
 struct neocode_register_file {
   int Vertex[8];

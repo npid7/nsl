@@ -1,7 +1,6 @@
 #pragma once
 
-#include <symbol.h>
-
+#include <nsl/symbol.hpp>
 #include <sstream>
 namespace std {
 template <typename T>

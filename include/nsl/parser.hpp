@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lexer.h>
+#include <nsl/lexer.hpp>
 
 struct parse_node {
   enum NodeType : int {

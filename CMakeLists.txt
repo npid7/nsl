@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.24)
 
 project(nslcc LANGUAGES C CXX)
 
@@ -18,6 +18,9 @@ add_library(nsl
     source/symbol.cpp
 )
 target_include_directories(nsl PUBLIC include)
+
+install(TARGETS nsl)
+install(DIRECTORY include DESTINATION .)
 
 if(${NSL_BUILD_COMPILER})
     if(NOT WIN32)

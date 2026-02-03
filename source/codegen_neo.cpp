@@ -1,9 +1,8 @@
 
-#include <codegen_neo.h>
-#include <lexer.h>
-
 #include <cstring>
 #include <iostream>
+#include <nsl/codegen_neo.hpp>
+#include <nsl/lexer.hpp>
 
 const neocode_variable ReturnReg = neocode_variable("", "", 0, 15 + 0x10, 0);
 

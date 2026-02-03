@@ -1,7 +1,6 @@
-#include <parser.h>
-
 #include <cstdlib>
 #include <functional>
+#include <nsl/parser.hpp>
 
 void parser::GenError(const std::string &S, const token &T) {
   std::string Line = LexerGetLine(&Lex, T.Line);

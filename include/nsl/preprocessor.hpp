@@ -1,6 +1,6 @@
 #pragma once
 
-#include <parser.h>
+#include <nsl/parser.hpp>
 
 struct cpp_macro {
   std::string Id;

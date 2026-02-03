@@ -1,5 +1,5 @@
-#include <lexer.h>
-#include <symbol.h>
+#include <nsl/lexer.hpp>
+#include <nsl/symbol.hpp>
 
 int symtable::GetIndex(std::string Name) {
   for (int i = 0; i < (int)symbols.size(); ++i) {

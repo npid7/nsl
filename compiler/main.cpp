@@ -1,12 +1,11 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
-
-#include "ast.h"
-#include "codegen_neo.h"
-#include "codegen_shbin.h"
-#include "parser.h"
-#include "preprocessor.h"
+#include <nsl/ast.hpp>
+#include <nsl/codegen_neo.hpp>
+#include <nsl/codegen_shbin.hpp>
+#include <nsl/parser.hpp>
+#include <nsl/preprocessor.hpp>
 
 char *SlurpFile(const char *FilePath, long *FileSize) {
   std::ifstream is(FilePath);

@@ -1,11 +1,11 @@
-#include <ast.h>
-#include <codegen_shbin.h>
-#include <compiler.h>
-#include <parser.h>
+#include <nsl.h>
 
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <nsl/ast.hpp>
+#include <nsl/codegen_shbin.hpp>
+#include <nsl/parser.hpp>
 
 static void (*UserErrorHandler)(const char *Msg) = nullptr;
 
@@ -35,11 +35,11 @@ static char *SlurpFile(const char *FilePath, long *FileSize) {
 
 extern "C" {
 
-void SelenaSetErrorHandler(void (*ErrorFunc)(const char *)) {
+void NslSetErrorHandler(void (*ErrorFunc)(const char *)) {
   UserErrorHandler = ErrorFunc;
 }
 
-char *SelenaCompileShaderSource(const char *Src, int *BinSize) {
+char *NslCompileShaderSource(const char *Src, int *BinSize) {
   symtable SymbolTable;
   lexer_state Lexer;
   LexerInit(&Lexer, (char *)Src, (char *)Src + strlen(Src) + 1, &SymbolTable);
@@ -57,9 +57,9 @@ char *SelenaCompileShaderSource(const char *Src, int *BinSize) {
   return Shbin;
 }
 
-char *SelenaCompileShaderFile(const char *Path, int *BinSize) {
+char *NslCompileShaderFile(const char *Path, int *BinSize) {
   long Size;
   char *Src = SlurpFile(Path, &Size);
-  return SelenaCompileShaderSource(Src, BinSize);
+  return NslCompileShaderSource(Src, BinSize);
 }
 }
